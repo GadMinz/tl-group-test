@@ -6,6 +6,7 @@ defineProps<{
   titles: { value: string; name: string }[];
   users: IUser[];
   selectedSort: TSort;
+  setSortQuery: (sort: string) => void;
 }>();
 </script>
 

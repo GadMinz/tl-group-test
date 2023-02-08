@@ -1,4 +1,4 @@
-import type {IUser, TInterval, TSort} from "@/types";
+import type { IUser, TInterval, TSort } from "@/types";
 import type { ActionContext } from "vuex";
 import type { IRootState } from "@/store";
 
@@ -67,6 +67,11 @@ const getters = {
         (user) =>
           user.login.toLowerCase().includes(state.search) ||
           user.status.toLowerCase().includes(state.search)
+      )
+      .filter(
+        (user) =>
+          user.orders >= state.interval.start &&
+          user.orders <= state.interval.end
       );
   },
   selectedSort(state: IUsersState) {
@@ -88,6 +93,12 @@ const actions = {
   ) {
     commit("setSearch", searchValue);
   },
+  setInterval(
+    { commit }: ActionContext<IUsersState, IRootState>,
+    interval: TInterval
+  ) {
+    commit("setInterval", interval);
+  },
 };
 
 // mutations
@@ -97,6 +108,9 @@ const mutations = {
   },
   setSearch(state: IUsersState, payload: string) {
     state.search = payload;
+  },
+  setInterval(state: IUsersState, payload: TInterval) {
+    state.interval = payload;
   },
 };
 export default {
