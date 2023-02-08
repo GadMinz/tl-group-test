@@ -1,0 +1,13 @@
+@import "normalize";
+
+body {
+  font-family: "Inter", sans-serif;
+  background-color: #fafafa;
+  line-height: 24px;
+}
+
+.wrapper {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 30px 20px;
+}
