@@ -16,12 +16,13 @@ const users = computed(() => store.getters["users/sortedUsers"]);
 const router = useRouter();
 const route = useRoute();
 const searchInput = ref("");
+const maxOrders = users.value.reduce(
+  (max: number, user: IUser) => (max < user.orders ? user.orders : max),
+  0
+);
 const intervalInput = ref({
   start: 0,
-  end: users.value.reduce(
-    (max: number, user: IUser) => (max < user.orders ? user.orders : max),
-    0
-  ),
+  end: maxOrders,
 });
 onMounted(() => {
   const query = route.query;
@@ -54,7 +55,9 @@ watch(intervalInput.value, () => {
   router.replace({
     query: {
       ...route.query,
-      interval: `${intervalInput.value.start},${intervalInput.value.end}`,
+      interval: `${intervalInput.value.start},${
+        intervalInput.value.end === "" ? maxOrders : intervalInput.value.end
+      }`,
     },
   });
 });
