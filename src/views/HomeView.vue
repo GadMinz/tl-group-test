@@ -100,6 +100,13 @@ const setSortQuery = (sortQuery: string) => {
     query: { ...route.query, sortQuery, reversed: reversed + "" },
   });
 };
+const clearSort = () => {
+  searchInput.value.login = "";
+  searchInput.value.status = "";
+  intervalInput.value.start = 0;
+  intervalInput.value.end = maxOrders;
+};
+
 </script>
 
 <template>
@@ -124,24 +131,25 @@ const setSortQuery = (sortQuery: string) => {
         <div>
           от
           <input
-            class="base-input"
-            v-model="intervalInput.start"
-            type="number"
-            min="0"
-            max="2147483647"
-            step="1"
+              class="base-input"
+              v-model="intervalInput.start"
+              type="number"
+              min="0"
+              max="2147483647"
+              step="1"
           />
           до
           <input
-            class="base-input"
-            v-model="intervalInput.end"
-            type="number"
-            min="0"
-            max="2147483647"
-            step="1"
+              class="base-input"
+              v-model="intervalInput.end"
+              type="number"
+              min="0"
+              max="2147483647"
+              step="1"
           />
         </div>
       </div>
+      <button class="btn" @click="clearSort">Сбросить фильтры</button>
     </div>
     <Table
       :setSortQuery="setSortQuery"
