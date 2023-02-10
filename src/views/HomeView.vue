@@ -19,6 +19,7 @@ const searchInput = ref({
   login: "",
   status: "",
 });
+const sort = computed(() => store.getters["users/selectedSort"]);
 const maxOrders = users.value.reduce(
   (max: number, user: IUser) => (max < user.orders ? user.orders : max),
   0
@@ -30,10 +31,7 @@ const intervalInput = ref({
 onMounted(() => {
   const query = route.query;
   if (query.sortQuery) {
-    store.dispatch("users/setSort", {
-      value: query.sortQuery,
-      reversed: query.reversed === "true",
-    });
+    store.dispatch("users/setSort", JSON.parse(query.sortQuery as string));
   }
   if (query.search) {
     const search = JSON.parse(query.search as string);
@@ -51,54 +49,30 @@ onMounted(() => {
     });
   }
 });
-watch(searchInput.value, () => {
+watch([searchInput.value, intervalInput.value, sort.value], () => {
   router.replace({
     query: {
-      ...route.query,
-      search: JSON.stringify({
-        login: searchInput.value.login.toLowerCase(),
-        status: searchInput.value.status.toLowerCase(),
-      }),
+      search: JSON.stringify(searchInput.value),
+      interval: `${intervalInput.value.start},${intervalInput.value.end}`,
+      sort: JSON.stringify(sort.value),
     },
+  });
+});
+watch(searchInput.value, () => {
+  store.dispatch("users/setSearch", {
+    login: searchInput.value.login.toLowerCase(),
+    status: searchInput.value.status.toLowerCase(),
   });
 });
 watch(intervalInput.value, () => {
-  router.replace({
-    query: {
-      ...route.query,
-      interval: `${intervalInput.value.start},${
-        intervalInput.value.end === "" ? maxOrders : intervalInput.value.end
-      }`,
-    },
+  store.dispatch("users/setInterval", {
+    start: intervalInput.value.start,
+    end: intervalInput.value.end === "" ? maxOrders : intervalInput.value.end,
   });
 });
-watch(route, () => {
-  const query = route.query;
-  if (query.sortQuery) {
-    store.dispatch("users/setSort", {
-      value: query.sortQuery,
-      reversed: query.reversed === "true",
-    });
-  }
-  if (query.search) {
-    const search = JSON.parse(query.search as string);
-    store.dispatch("users/setSearch", search);
-  }
-  if (query.interval) {
-    const [start, end] = (query.interval as string).split(",");
-    const interval = { start: Number(start), end: Number(end) };
-    store.dispatch("users/setInterval", interval);
-  }
-});
-const sort = computed(() => store.getters["users/selectedSort"]);
-const setSortQuery = (sortQuery: string) => {
-  let reversed = false;
-  if (sort.value.value === sortQuery) {
-    reversed = !sort.value.reversed;
-  }
-  router.replace({
-    query: { ...route.query, sortQuery, reversed: reversed + "" },
-  });
+
+const setSort = (selectedSort: string) => {
+  store.dispatch("users/setSort", selectedSort);
 };
 const clearSort = () => {
   searchInput.value.login = "";
@@ -106,7 +80,6 @@ const clearSort = () => {
   intervalInput.value.start = 0;
   intervalInput.value.end = maxOrders;
 };
-
 </script>
 
 <template>
@@ -131,28 +104,28 @@ const clearSort = () => {
         <div>
           от
           <input
-              class="base-input"
-              v-model="intervalInput.start"
-              type="number"
-              min="0"
-              max="2147483647"
-              step="1"
+            class="base-input"
+            v-model="intervalInput.start"
+            type="number"
+            min="0"
+            max="2147483647"
+            step="1"
           />
           до
           <input
-              class="base-input"
-              v-model="intervalInput.end"
-              type="number"
-              min="0"
-              max="2147483647"
-              step="1"
+            class="base-input"
+            v-model="intervalInput.end"
+            type="number"
+            min="0"
+            max="2147483647"
+            step="1"
           />
         </div>
       </div>
       <button class="btn" @click="clearSort">Сбросить фильтры</button>
     </div>
     <Table
-      :setSortQuery="setSortQuery"
+      :setSort="setSort"
       :titles="titles"
       :users="users"
       :selectedSort="sort"

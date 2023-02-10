@@ -86,7 +86,7 @@ const getters = {
 const actions = {
   setSort(
     { commit }: ActionContext<IUsersState, IRootState>,
-    selectSort: TSort
+    selectSort: string
   ) {
     commit("setSort", selectSort);
   },
@@ -106,8 +106,11 @@ const actions = {
 
 // mutations
 const mutations = {
-  setSort(state: IUsersState, payload: TSort) {
-    state.sort = payload;
+  setSort(state: IUsersState, payload: string) {
+    state.sort = {
+      value: payload,
+      reversed: state.sort.value === payload ? !state.sort.reversed : false,
+    };
   },
   setSearch(state: IUsersState, payload: TSearch) {
     state.search = payload;

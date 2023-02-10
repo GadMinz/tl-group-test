@@ -6,7 +6,7 @@ defineProps<{
   titles: { value: string; name: string }[];
   users: IUser[];
   selectedSort: TSort;
-  setSortQuery: (sort: string) => void;
+  setSort: (sort: string) => void;
 }>();
 </script>
 
@@ -15,7 +15,7 @@ defineProps<{
     <thead>
       <tr>
         <th
-          @click="setSortQuery(title.value)"
+          @click="setSort(title.value)"
           v-for="title in titles"
           :key="title.value"
         >
