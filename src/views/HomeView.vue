@@ -30,8 +30,8 @@ const intervalInput = ref({
 });
 onMounted(() => {
   const query = route.query;
-  if (query.sortQuery) {
-    store.dispatch("users/setSort", JSON.parse(query.sortQuery as string));
+  if (query.sort) {
+    store.dispatch("users/setSort", JSON.parse(query.sort as string));
   }
   if (query.search) {
     const search = JSON.parse(query.search as string);
@@ -49,7 +49,7 @@ onMounted(() => {
     });
   }
 });
-watch([searchInput.value, intervalInput.value, sort.value], () => {
+watch([searchInput.value, intervalInput.value, sort], () => {
   router.replace({
     query: {
       search: JSON.stringify(searchInput.value),
@@ -72,13 +72,20 @@ watch(intervalInput.value, () => {
 });
 
 const setSort = (selectedSort: string) => {
-  store.dispatch("users/setSort", selectedSort);
+  store.dispatch("users/setSort", {
+    value: selectedSort,
+    reversed: sort.value.value === selectedSort ? !sort.value.reversed : false,
+  });
 };
 const clearSort = () => {
   searchInput.value.login = "";
   searchInput.value.status = "";
   intervalInput.value.start = 0;
   intervalInput.value.end = maxOrders;
+  store.dispatch("users/setSort", {
+    value: "place",
+    reversed: false,
+  });
 };
 </script>
 

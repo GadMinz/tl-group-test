@@ -8,9 +8,7 @@ export interface IUsersState {
   interval: TInterval;
   search: TSearch;
 }
-
-// initial state
-const state: IUsersState = {
+const initialState = {
   all: [
     {
       place: 1,
@@ -47,6 +45,8 @@ const state: IUsersState = {
     status: "",
   },
 };
+
+const state: IUsersState = initialState;
 
 // getters
 const getters = {
@@ -86,7 +86,7 @@ const getters = {
 const actions = {
   setSort(
     { commit }: ActionContext<IUsersState, IRootState>,
-    selectSort: string
+    selectSort: TSort
   ) {
     commit("setSort", selectSort);
   },
@@ -106,11 +106,8 @@ const actions = {
 
 // mutations
 const mutations = {
-  setSort(state: IUsersState, payload: string) {
-    state.sort = {
-      value: payload,
-      reversed: state.sort.value === payload ? !state.sort.reversed : false,
-    };
+  setSort(state: IUsersState, payload: TSort) {
+    state.sort = payload;
   },
   setSearch(state: IUsersState, payload: TSearch) {
     state.search = payload;
