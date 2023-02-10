@@ -14,3 +14,5 @@ export type TInterval = {
   start: number;
   end: number;
 };
+
+export type TSearch = Omit<IUser, "place" | "orders">;

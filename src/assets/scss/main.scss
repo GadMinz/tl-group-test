@@ -25,7 +25,9 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-
+  input {
+    margin-right: 15px;
+  }
   &_interval {
     text-align: center;
 

@@ -15,7 +15,10 @@ const users = computed(() => store.getters["users/sortedUsers"]);
 
 const router = useRouter();
 const route = useRoute();
-const searchInput = ref("");
+const searchInput = ref({
+  login: "",
+  status: "",
+});
 const maxOrders = users.value.reduce(
   (max: number, user: IUser) => (max < user.orders ? user.orders : max),
   0
@@ -32,9 +35,11 @@ onMounted(() => {
       reversed: query.reversed === "true",
     });
   }
-  if (query.search || query.search === "") {
-    store.dispatch("users/setSearch", query.search);
-    searchInput.value = query.search as string;
+  if (query.search) {
+    const search = JSON.parse(query.search as string);
+    store.dispatch("users/setSearch", search);
+    searchInput.value.login = search.login;
+    searchInput.value.status = search.status;
   }
   if (query.interval) {
     const [start, end] = (query.interval as string).split(",");
@@ -46,9 +51,15 @@ onMounted(() => {
     });
   }
 });
-watch(searchInput, () => {
+watch(searchInput.value, () => {
   router.replace({
-    query: { ...route.query, search: searchInput.value },
+    query: {
+      ...route.query,
+      search: JSON.stringify({
+        login: searchInput.value.login.toLowerCase(),
+        status: searchInput.value.status.toLowerCase(),
+      }),
+    },
   });
 });
 watch(intervalInput.value, () => {
@@ -69,8 +80,9 @@ watch(route, () => {
       reversed: query.reversed === "true",
     });
   }
-  if (query.search || query.search === "") {
-    store.dispatch("users/setSearch", query.search);
+  if (query.search) {
+    const search = JSON.parse(query.search as string);
+    store.dispatch("users/setSearch", search);
   }
   if (query.interval) {
     const [start, end] = (query.interval as string).split(",");
@@ -93,12 +105,20 @@ const setSortQuery = (sortQuery: string) => {
 <template>
   <main>
     <div class="tools">
-      <input
-        type="text"
-        placeholder="Введите логин или статус"
-        class="base-input"
-        v-model="searchInput"
-      />
+      <div class="tools_search">
+        <input
+          type="text"
+          placeholder="Введите логин"
+          class="base-input"
+          v-model="searchInput.login"
+        />
+        <input
+          type="text"
+          placeholder="Введите статус"
+          class="base-input"
+          v-model="searchInput.status"
+        />
+      </div>
       <div class="tools_interval">
         <p>Подтвержденные заказы</p>
         <div>

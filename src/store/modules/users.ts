@@ -1,4 +1,4 @@
-import type { IUser, TInterval, TSort } from "@/types";
+import type { IUser, TInterval, TSearch, TSort } from "@/types";
 import type { ActionContext } from "vuex";
 import type { IRootState } from "@/store";
 
@@ -6,7 +6,7 @@ export interface IUsersState {
   all: IUser[];
   sort: TSort;
   interval: TInterval;
-  search: string;
+  search: TSearch;
 }
 
 // initial state
@@ -42,7 +42,10 @@ const state: IUsersState = {
     start: 0,
     end: Number.POSITIVE_INFINITY,
   },
-  search: "",
+  search: {
+    login: "",
+    status: "",
+  },
 };
 
 // getters
@@ -65,8 +68,8 @@ const getters = {
       })
       .filter(
         (user) =>
-          user.login.toLowerCase().includes(state.search) ||
-          user.status.toLowerCase().includes(state.search)
+          user.login.toLowerCase().includes(state.search.login) &&
+          user.status.toLowerCase().includes(state.search.status)
       )
       .filter(
         (user) =>
@@ -106,7 +109,7 @@ const mutations = {
   setSort(state: IUsersState, payload: TSort) {
     state.sort = payload;
   },
-  setSearch(state: IUsersState, payload: string) {
+  setSearch(state: IUsersState, payload: TSearch) {
     state.search = payload;
   },
   setInterval(state: IUsersState, payload: TInterval) {
